@@ -1,53 +1,87 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Para ti</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #000;
-            color: white;
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            text-align: center;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para ti</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(180deg, #000000, #1a1a1a);
+        color: white;
+        font-family: 'Arial', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 420px;
+    }
+
+    .video-container {
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(255,255,255,0.08);
+        opacity: 0;
+        animation: fadeIn 2s ease forwards;
+    }
+
+    video {
+        width: 100%;
+        display: block;
+    }
+
+    .text {
+        margin-top: 25px;
+        font-size: 1.2rem;
+        letter-spacing: 1px;
+        opacity: 0;
+        transition: opacity 2s ease;
+    }
+
+    .show-text {
+        opacity: 1;
+    }
+
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
         }
-        .video-container {
-            width: 90%;
-            max-width: 400px;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
-            margin-bottom: 30px;
-        }
-        video {
-            width: 100%;
-            display: block;
-        }
-        .text {
-            font-size: 1.2rem;
-            letter-spacing: 1px;
-            animation: fadeIn 3s ease-in;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-    </style>
+    }
+</style>
 </head>
+
 <body>
+
+<div class="container">
+
     <div class="video-container">
-        <video autoplay muted loop playsinline>
+        <video id="myVideo" playsinline controls>
             <source src="video.mp4" type="video/mp4">
-            Your browser does not support the video tag.
         </video>
     </div>
-    <div class="text">Cuídate y mantente bien.🤍</div>
+
+    <div id="message" class="text">
+        Cuídate y mantente bien.🤍
+    </div>
+
+</div>
+
+<script>
+    const video = document.getElementById('myVideo');
+    const message = document.getElementById('message');
+
+    video.onended = () => {
+        message.classList.add('show-text');
+    };
+</script>
+
 </body>
 </html>
