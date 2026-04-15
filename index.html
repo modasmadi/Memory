@@ -4,58 +4,40 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cuídate y mantente bien.</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: #000;
-      color: #fff;
+      background: #000000;
+      color: #ffffff;
       font-family: 'Cormorant Garamond', serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
-
-    /* grain texture */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 9999;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* ── TITLE ── */
     .site-title {
-      margin-top: 72px;
-      margin-bottom: 64px;
+      margin-top: 64px;
+      margin-bottom: 52px;
+      padding: 0 20px;
       text-align: center;
-      animation: fadeUp 1.4s ease forwards;
+      animation: fadeUp 1.3s ease forwards;
       opacity: 0;
       animation-delay: 0.2s;
     }
 
     .site-title h1 {
-      font-size: clamp(1.6rem, 5vw, 2.8rem);
-      font-weight: 300;
+      font-size: clamp(1.8rem, 6vw, 3rem);
+      font-weight: 600;
       font-style: italic;
+      color: #ffffff;
+      line-height: 1.2;
       letter-spacing: 0.01em;
-      color: #fff;
-      line-height: 1.3;
-    }
-
-    /* ── DIVIDER ── */
-    .divider {
-      width: 1px;
-      height: 48px;
-      background: rgba(255,255,255,0.15);
-      margin-bottom: 56px;
-      animation: fadeIn 1.4s ease forwards;
-      opacity: 0;
-      animation-delay: 0.6s;
+      text-shadow: 0 0 40px rgba(255,255,255,0.08);
     }
 
     /* ── VIDEO LIST ── */
@@ -65,19 +47,19 @@
       padding: 0 20px;
       display: flex;
       flex-direction: column;
-      gap: 36px;
+      gap: 32px;
     }
 
     .video-card {
       opacity: 0;
       animation: fadeUp 1s ease forwards;
       border: 1px solid rgba(255,255,255,0.07);
-      background: #0d0d0d;
+      background: #000000;
       overflow: hidden;
     }
 
     .card-top {
-      padding: 12px 18px;
+      padding: 11px 16px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
       display: flex;
       align-items: center;
@@ -85,46 +67,44 @@
     }
 
     .card-number {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       font-style: italic;
-      color: rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.22);
       letter-spacing: 0.14em;
+      font-weight: 300;
     }
 
-    .card-dots {
-      display: flex;
-      gap: 5px;
-    }
-
+    .card-dots { display: flex; gap: 5px; }
     .card-dots span {
-      width: 5px;
-      height: 5px;
+      width: 5px; height: 5px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.07);
     }
 
+    /* video wrapper */
     .video-container {
       position: relative;
       width: 100%;
-      background: #000;
+      background: #000000;
       cursor: pointer;
     }
 
     .video-container video {
       width: 100%;
       display: block;
-      max-height: 460px;
+      max-height: 480px;
       object-fit: contain;
-      background: #000;
+      background: #000000;
     }
 
+    /* play overlay */
     .play-overlay {
       position: absolute;
       inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(0,0,0,0.3);
+      background: rgba(0,0,0,0.28);
       transition: opacity 0.3s ease;
       pointer-events: none;
     }
@@ -132,38 +112,35 @@
     .play-overlay.hidden { opacity: 0; }
 
     .play-btn {
-      width: 52px;
-      height: 52px;
-      border: 1px solid rgba(255,255,255,0.3);
+      width: 54px; height: 54px;
+      border: 1px solid rgba(255,255,255,0.35);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      backdrop-filter: blur(4px);
-      background: rgba(0,0,0,0.25);
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      backdrop-filter: blur(6px);
+      background: rgba(0,0,0,0.3);
+      transition: transform 0.22s ease, border-color 0.22s ease;
     }
 
     .video-container:hover .play-btn {
-      transform: scale(1.07);
-      border-color: rgba(255,255,255,0.55);
+      transform: scale(1.08);
+      border-color: rgba(255,255,255,0.6);
     }
 
     .play-btn svg {
-      width: 16px;
-      height: 16px;
-      fill: rgba(255,255,255,0.85);
+      width: 16px; height: 16px;
+      fill: #ffffff;
       margin-left: 3px;
     }
 
-    /* loading / error */
+    /* loading */
     .state-msg {
       text-align: center;
       padding: 60px 0;
       font-style: italic;
       font-size: 1rem;
-      color: rgba(255,255,255,0.18);
-      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.15);
     }
 
     .spinner {
@@ -175,53 +152,42 @@
       margin: 0 auto 16px;
     }
 
-    /* ── PARA TI FOOTER ── */
+    /* ── PARA TI ── */
     .para-ti {
-      margin-top: 80px;
-      margin-bottom: 60px;
+      margin-top: 72px;
+      margin-bottom: 64px;
+      padding: 0 20px;
       text-align: center;
-      animation: fadeUp 1.2s ease forwards;
-      opacity: 0;
-      animation-delay: 0.4s;
     }
 
     .para-ti p {
-      font-size: clamp(1rem, 3vw, 1.5rem);
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      font-weight: 600;
       font-style: italic;
-      font-weight: 300;
-      color: rgba(255,255,255,0.45);
-      letter-spacing: 0.08em;
+      color: #ffffff;
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 40px rgba(255,255,255,0.08);
     }
 
     /* ── ANIMATIONS ── */
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
+      from { opacity: 0; transform: translateY(14px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (max-width: 560px) {
-      .site-title { margin-top: 48px; margin-bottom: 40px; }
+      .site-title { margin-top: 44px; margin-bottom: 36px; }
       .video-list { padding: 0 12px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- العنوان فوق -->
   <div class="site-title">
     <h1>Cuídate y mantente bien.&nbsp;🤍</h1>
   </div>
 
-  <div class="divider"></div>
-
-  <!-- الفيديوهات -->
   <div class="video-list" id="container">
     <div class="state-msg">
       <div class="spinner"></div>
@@ -229,7 +195,6 @@
     </div>
   </div>
 
-  <!-- para ti تحت -->
   <div class="para-ti">
     <p>para ti</p>
   </div>
@@ -244,6 +209,13 @@
   function extractNumber(name) {
     const m = name.match(/(\d+)/);
     return m ? parseInt(m[1], 10) : 0;
+  }
+
+  // force browser to render first frame as thumbnail
+  function forceThumb(vid) {
+    vid.addEventListener('loadedmetadata', () => {
+      vid.currentTime = 0.001;
+    }, { once: true });
   }
 
   async function load() {
@@ -278,7 +250,7 @@
             <div class="card-dots"><span></span><span></span><span></span></div>
           </div>
           <div class="video-container" id="vc-${i}">
-            <video preload="metadata" playsinline id="vid-${i}">
+            <video preload="auto" playsinline id="vid-${i}">
               <source src="${v.download_url}" type="video/mp4" />
             </video>
             <div class="play-overlay" id="overlay-${i}">
@@ -289,12 +261,13 @@
           </div>`;
 
         container.appendChild(card);
-      });
 
-      // play logic
-      videos.forEach((_, i) => {
+        // force thumbnail after DOM insert
+        const vid = document.getElementById(`vid-${i}`);
+        forceThumb(vid);
+
+        // play logic
         const vc      = document.getElementById(`vc-${i}`);
-        const vid     = document.getElementById(`vid-${i}`);
         const overlay = document.getElementById(`overlay-${i}`);
 
         vc.addEventListener('click', () => {
