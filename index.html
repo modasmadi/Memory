@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Para ti, siempre.</title>
+  <meta name="description" content="Recuerdos guardados para ti." />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #000000;
+      color: #ffffff;
+      font-family: 'Cormorant Garamond', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #000000; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
+    /* ── TOP TITLE ── */
+    .site-title {
+      margin-top: 72px;
+      margin-bottom: 56px;
+      padding: 0 20px;
+      text-align: center;
+      animation: fadeUp 1.6s ease forwards;
+      opacity: 0;
+      animation-delay: 0.2s;
+    }
+
+    .site-title h1 {
+      font-size: clamp(2rem, 7vw, 3.4rem);
+      font-weight: 600;
+      font-style: italic;
+      color: #ffffff;
+      line-height: 1.2;
+      letter-spacing: 0.02em;
+      text-shadow: 0 0 50px rgba(255,255,255,0.06);
+    }
+
+    /* ── MEDIA LIST ── */
+    .media-list {
+      width: 100%;
+      max-width: 760px;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+
+    /* ── CARD ── */
+    .media-card {
+      opacity: 0;
+      transform: translateY(20px);
+      border: 1px solid rgba(255,255,255,0.07);
+      background: #000000;
+      overflow: hidden;
+      transition: border-color 0.4s ease;
+    }
+
+    .media-card.visible {
+      animation: fadeUp 1s ease forwards;
+    }
+
+    .media-card:hover {
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    .card-top {
+      padding: 11px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-number {
+      font-size: 0.68rem;
+      font-style: italic;
+      color: rgba(255,255,255,0.22);
+      letter-spacing: 0.14em;
+      font-weight: 300;
+    }
+
+    .card-type {
+      font-size: 0.58rem;
+      font-style: italic;
+      color: rgba(255,255,255,0.12);
+      letter-spacing: 0.18em;
+      font-weight: 300;
+      text-transform: uppercase;
+    }
+
+    .card-dots { display: flex; gap: 5px; }
+    .card-dots span {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.07);
+    }
+
+    /* ── VIDEO WRAPPER ── */
+    .video-container {
+      position: relative;
+      width: 100%;
+      background: #000000;
+      cursor: pointer;
+    }
+
+    .video-container video {
+      width: 100%;
+      display: block;
+      max-height: 520px;
+      object-fit: contain;
+      background: #000000;
+    }
+
+    /* ── PLAY OVERLAY ── */
+    .play-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.30);
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+
+    .play-overlay.hidden { opacity: 0; }
+
+    .play-btn {
+      width: 58px; height: 58px;
+      border: 1px solid rgba(255,255,255,0.30);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      background: rgba(0,0,0,0.35);
+      transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+    }
+
+    .video-container:hover .play-btn {
+      transform: scale(1.1);
+      border-color: rgba(255,255,255,0.55);
+      background: rgba(0,0,0,0.45);
+    }
+
+    .play-btn svg {
+      width: 18px; height: 18px;
+      fill: #ffffff;
+      margin-left: 3px;
+    }
+
+    /* ── IMAGE WRAPPER ── */
+    .image-container {
+      position: relative;
+      width: 100%;
+      background: #000000;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .image-container img {
+      width: 100%;
+      display: block;
+      max-height: 600px;
+      object-fit: contain;
+      background: #000000;
+      transition: transform 0.6s ease;
+    }
+
+    .image-container:hover img {
+      transform: scale(1.02);
+    }
+
+    /* ── FULLSCREEN IMAGE VIEWER ── */
+    .fullscreen-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .fullscreen-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .fullscreen-overlay img {
+      max-width: 95vw;
+      max-height: 95vh;
+      object-fit: contain;
+      border-radius: 2px;
+    }
+
+    .fullscreen-close {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      width: 40px; height: 40px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 50%;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.25s ease, transform 0.25s ease;
+    }
+
+    .fullscreen-close:hover {
+      border-color: rgba(255,255,255,0.5);
+      transform: scale(1.1);
+    }
+
+    .fullscreen-close svg {
+      width: 14px; height: 14px;
+      stroke: #ffffff;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    /* ── LOADING STATE ── */
+    .state-msg {
+      text-align: center;
+      padding: 60px 0;
+      font-style: italic;
+      font-size: 1rem;
+      color: rgba(255,255,255,0.15);
+    }
+
+    .spinner {
+      width: 16px; height: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-top-color: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    /* ── BOTTOM TITLE ── */
+    .bottom-title {
+      margin-top: 80px;
+      margin-bottom: 72px;
+      padding: 0 20px;
+      text-align: center;
+      opacity: 0;
+    }
+
+    .bottom-title.visible {
+      animation: fadeUp 1.4s ease forwards;
+    }
+
+    .bottom-title p {
+      font-size: clamp(1.5rem, 5vw, 2.4rem);
+      font-weight: 600;
+      font-style: italic;
+      color: #ffffff;
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 50px rgba(255,255,255,0.06);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 560px) {
+      .site-title { margin-top: 48px; margin-bottom: 40px; }
+      .media-list { padding: 0 12px; gap: 28px; }
+      .bottom-title { margin-top: 56px; margin-bottom: 52px; }
+      .play-btn { width: 50px; height: 50px; }
+      .play-btn svg { width: 15px; height: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── TOP TITLE ── -->
+  <div class="site-title">
+    <h1>Para ti&nbsp;🤍</h1>
+  </div>
+
+  <!-- ── MEDIA CONTAINER ── -->
+  <div class="media-list" id="container">
+    <div class="state-msg">
+      <div class="spinner"></div>
+      ...
+    </div>
+  </div>
+
+  <!-- ── BOTTOM TITLE ── -->
+  <div class="bottom-title" id="bottom-title">
+    <p>siempre.</p>
+  </div>
+
+  <!-- ── FULLSCREEN VIEWER ── -->
+  <div class="fullscreen-overlay" id="fullscreen">
+    <div class="fullscreen-close" id="fullscreen-close">
+      <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+    </div>
+    <img id="fullscreen-img" src="" alt="" />
+  </div>
+
+</body>
+
+<script>
+  // ╔═══════════════════════════════════════════════════════╗
+  // ║  CONFIGURATION — change these to match your repo     ║
+  // ╚═══════════════════════════════════════════════════════╝
+  const REPO      = 'YOUR_USERNAME/YOUR_REPO';   // ← change this
+  const BRANCH    = 'main';
+  const MEDIA_DIR = '';  // root of repo, or e.g. 'media/' for a subfolder
+
+  // file extensions
+  const VIDEO_EXT = /\.(mp4|mov|webm|mkv)$/i;
+  const IMAGE_EXT = /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i;
+
+  // ── helpers ──
+  function extractNumber(name) {
+    const m = name.match(/(\d+)/);
+    return m ? parseInt(m[1], 10) : 0;
+  }
+
+  function getMediaType(name) {
+    if (VIDEO_EXT.test(name)) return 'video';
+    if (IMAGE_EXT.test(name)) return 'image';
+    return null;
+  }
+
+  // force browser to render first frame as thumbnail
+  function forceThumb(vid) {
+    vid.addEventListener('loadedmetadata', () => {
+      vid.currentTime = 0.001;
+    }, { once: true });
+  }
+
+  // ── intersection observer for scroll animations ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  // ── bottom title observer ──
+  const bottomObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        bottomObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  // ── fullscreen viewer ──
+  const fullscreen    = document.getElementById('fullscreen');
+  const fullscreenImg = document.getElementById('fullscreen-img');
+  const fullscreenClose = document.getElementById('fullscreen-close');
+
+  function openFullscreen(src) {
+    fullscreenImg.src = src;
+    fullscreen.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeFullscreen() {
+    fullscreen.classList.remove('active');
+    document.body.style.overflow = '';
+    setTimeout(() => { fullscreenImg.src = ''; }, 400);
+  }
+
+  fullscreenClose.addEventListener('click', closeFullscreen);
+  fullscreen.addEventListener('click', (e) => {
+    if (e.target === fullscreen) closeFullscreen();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeFullscreen();
+  });
+
+  // ── create video card ──
+  function createVideoCard(file, index) {
+    const card = document.createElement('div');
+    card.className = 'media-card';
+    card.style.animationDelay = `${0.1 + index * 0.12}s`;
+
+    card.innerHTML = `
+      <div class="card-top">
+        <span class="card-number">${String(index + 1).padStart(2, '0')}</span>
+        <div class="card-dots"><span></span><span></span><span></span></div>
+      </div>
+      <div class="video-container" id="vc-${index}">
+        <video preload="auto" playsinline id="vid-${index}">
+          <source src="${file.download_url}" type="video/mp4" />
+        </video>
+        <div class="play-overlay" id="overlay-${index}">
+          <div class="play-btn">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+      </div>`;
+
+    return card;
+  }
+
+  // ── create image card ──
+  function createImageCard(file, index) {
+    const card = document.createElement('div');
+    card.className = 'media-card';
+    card.style.animationDelay = `${0.1 + index * 0.12}s`;
+
+    card.innerHTML = `
+      <div class="card-top">
+        <span class="card-number">${String(index + 1).padStart(2, '0')}</span>
+        <div class="card-dots"><span></span><span></span><span></span></div>
+      </div>
+      <div class="image-container" id="img-container-${index}">
+        <img src="${file.download_url}" alt="Memory ${index + 1}" loading="lazy" id="img-${index}" />
+      </div>`;
+
+    return card;
+  }
+
+  // ── main load ──
+  async function load() {
+    const container = document.getElementById('container');
+    const bottomTitle = document.getElementById('bottom-title');
+
+    try {
+      const apiUrl = MEDIA_DIR
+        ? `https://api.github.com/repos/${REPO}/contents/${MEDIA_DIR}?ref=${BRANCH}`
+        : `https://api.github.com/repos/${REPO}/contents/?ref=${BRANCH}`;
+
+      const res = await fetch(apiUrl, {
+        headers: { Accept: 'application/vnd.github.v3+json' }
+      });
+      if (!res.ok) throw new Error(res.status);
+
+      const files  = await res.json();
+      const media = files
+        .filter(f => f.type === 'file' && getMediaType(f.name))
+        .sort((a, b) => extractNumber(a.name) - extractNumber(b.name));
+
+      if (!media.length) {
+        container.innerHTML = '<p class="state-msg">...</p>';
+        bottomObserver.observe(bottomTitle);
+        return;
+      }
+
+      container.innerHTML = '';
+
+      media.forEach((file, i) => {
+        const type = getMediaType(file.name);
+        let card;
+
+        if (type === 'video') {
+          card = createVideoCard(file, i);
+          container.appendChild(card);
+
+          // force thumbnail after DOM insert
+          const vid = document.getElementById(`vid-${i}`);
+          forceThumb(vid);
+
+          // play/pause logic
+          const vc      = document.getElementById(`vc-${i}`);
+          const overlay = document.getElementById(`overlay-${i}`);
+
+          vc.addEventListener('click', () => {
+            if (vid.paused) {
+              // pause all other videos
+              document.querySelectorAll('video').forEach(v2 => { if (v2 !== vid) { v2.pause(); v2.controls = false; } });
+              // show all other overlays
+              document.querySelectorAll('.play-overlay').forEach(ov => { if (ov !== overlay) ov.classList.remove('hidden'); });
+              vid.controls = true;
+              vid.play();
+              overlay.classList.add('hidden');
+            } else {
+              vid.pause();
+              overlay.classList.remove('hidden');
+            }
+          });
+
+          vid.addEventListener('ended', () => {
+            vid.controls = false;
+            overlay.classList.remove('hidden');
+          });
+
+        } else {
+          card = createImageCard(file, i);
+          container.appendChild(card);
+
+          // click to view fullscreen
+          const imgContainer = document.getElementById(`img-container-${i}`);
+          imgContainer.addEventListener('click', () => {
+            openFullscreen(file.download_url);
+          });
+        }
+
+        // observe for scroll animation
+        observer.observe(card);
+      });
+
+      // observe bottom title
+      bottomObserver.observe(bottomTitle);
+
+    } catch (e) {
+      console.error(e);
+      container.innerHTML = '<p class="state-msg">...</p>';
+      bottomObserver.observe(bottomTitle);
+    }
+  }
+
+  load();
+</script>
+
+</html>
